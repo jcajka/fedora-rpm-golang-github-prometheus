@@ -5,7 +5,7 @@
 
 # https://github.com/prometheus/prometheus
 %global goipath         github.com/prometheus/prometheus
-Version:                2.9.2
+Version:                2.11.0
 
 %gometa
 
@@ -24,7 +24,7 @@ The Prometheus monitoring system and time series database.}
                         documentation
 
 Name:           %{goname}
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Prometheus monitoring system and time series database
 
 # Upstream license specification: Apache-2.0
@@ -49,6 +49,7 @@ BuildRequires:  golang(github.com/cockroachdb/cockroach/pkg/util/protoutil)
 BuildRequires:  golang(github.com/go-kit/kit/log)
 BuildRequires:  golang(github.com/go-kit/kit/log/level)
 BuildRequires:  golang(github.com/go-logfmt/logfmt)
+BuildRequires:  golang(github.com/go-openapi/strfmt)
 BuildRequires:  golang(github.com/gogo/protobuf/gogoproto)
 BuildRequires:  golang(github.com/gogo/protobuf/proto)
 BuildRequires:  golang(github.com/gogo/protobuf/types)
@@ -68,10 +69,11 @@ BuildRequires:  golang(github.com/hashicorp/consul/api)
 BuildRequires:  golang(github.com/json-iterator/go)
 BuildRequires:  golang(github.com/miekg/dns)
 BuildRequires:  golang(github.com/mwitkow/go-conntrack)
-BuildRequires:  golang(github.com/oklog/oklog/pkg/group)
+BuildRequires:  golang(github.com/oklog/run)
 BuildRequires:  golang(github.com/opentracing-contrib/go-stdlib/nethttp)
 BuildRequires:  golang(github.com/opentracing/opentracing-go)
 BuildRequires:  golang(github.com/pkg/errors)
+BuildRequires:  golang(github.com/prometheus/alertmanager/api/v2/models)
 BuildRequires:  golang(github.com/prometheus/client_golang/api)
 BuildRequires:  golang(github.com/prometheus/client_golang/api/prometheus/v1)
 BuildRequires:  golang(github.com/prometheus/client_golang/prometheus)
@@ -84,6 +86,7 @@ BuildRequires:  golang(github.com/prometheus/common/model)
 BuildRequires:  golang(github.com/prometheus/common/promlog)
 BuildRequires:  golang(github.com/prometheus/common/promlog/flag)
 BuildRequires:  golang(github.com/prometheus/common/route)
+BuildRequires:  golang(github.com/prometheus/common/server)
 BuildRequires:  golang(github.com/prometheus/common/version)
 BuildRequires:  golang(github.com/prometheus/tsdb)
 BuildRequires:  golang(github.com/prometheus/tsdb/fileutil)
@@ -162,6 +165,9 @@ install -m 0755 -vp %{gobuilddir}/bin/* %{buildroot}%{_bindir}/
 %gopkgfiles
 
 %changelog
+* Tue Jul 09 19:29:38 CEST 2019 Robert-André Mauchin <zebob.m@gmail.com> - 2.11.0-1
+- Release 2.11.0
+
 * Tue Jul 09 2019 Elliott Sales de Andrade <quantum.analyst@gmail.com> - 2.9.2-2
 - Add Obsoletes for old names
 
