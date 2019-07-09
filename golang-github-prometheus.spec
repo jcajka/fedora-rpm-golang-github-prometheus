@@ -9,6 +9,12 @@ Version:                2.9.2
 
 %gometa
 
+# Remove in F33:
+%global godevelheader %{expand:
+Obsoletes:      golang-github-prometheus-prometheus-devel < 1.8.0-5
+Obsoletes:      golang-github-prometheus-prometheus-unit-test-devel < 1.8.0-5
+}
+
 %global common_description %{expand:
 The Prometheus monitoring system and time series database.}
 
@@ -18,7 +24,7 @@ The Prometheus monitoring system and time series database.}
                         documentation
 
 Name:           %{goname}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Prometheus monitoring system and time series database
 
 # Upstream license specification: Apache-2.0
@@ -120,6 +126,9 @@ BuildRequires:  golang(k8s.io/apimachinery/pkg/types)
 BuildRequires:  golang(k8s.io/client-go/kubernetes/fake)
 %endif
 
+# Remove in F33:
+Obsoletes:      golang-github-prometheus-prometheus < 1.8.0-4
+
 %description
 %{common_description}
 
@@ -153,6 +162,9 @@ install -m 0755 -vp %{gobuilddir}/bin/* %{buildroot}%{_bindir}/
 %gopkgfiles
 
 %changelog
+* Tue Jul 09 2019 Elliott Sales de Andrade <quantum.analyst@gmail.com> - 2.9.2-2
+- Add Obsoletes for old names
+
 * Wed May 15 03:08:50 CEST 2019 Robert-André Mauchin <zebob.m@gmail.com> - 2.9.2-1
 - Release 2.9.2
 
