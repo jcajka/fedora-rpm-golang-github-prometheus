@@ -31,6 +31,8 @@ Summary:        Prometheus monitoring system and time series database
 License:        ASL 2.0
 URL:            %{gourl}
 Source0:        %{gosource}
+# To use pre-1.0.0 github.com/prometheus/client_golang
+Patch0:         0001-Revert-372b3438e5f995f14d9317352b432dc43cfdd40d.patch
 
 BuildRequires:  golang(github.com/alecthomas/units)
 BuildRequires:  golang(github.com/aws/aws-sdk-go/aws)
@@ -139,6 +141,7 @@ Obsoletes:      golang-github-prometheus-prometheus < 1.8.0-4
 
 %prep
 %goprep
+%patch0 -p1
 find . -name "*.go" -exec sed -i "s|\"k8s.io/klog\"|klog \"github.com/simonpasquier/klog-gokit\"|" "{}" +;
 
 %build
