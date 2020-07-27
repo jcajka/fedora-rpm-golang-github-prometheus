@@ -24,7 +24,7 @@ The Prometheus monitoring system and time series database.}
                         documentation
 
 Name:           %{goname}
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Prometheus monitoring system and time series database
 
 # Upstream license specification: Apache-2.0
@@ -168,6 +168,9 @@ install -m 0755 -vp %{gobuilddir}/bin/* %{buildroot}%{_bindir}/
 %gopkgfiles
 
 %changelog
+* Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.11.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
 * Mon Feb 17 2020 Elliott Sales de Andrade <quantum.analyst@gmail.com> - 2.11.0-4
 - Rebuilt for GHSA-jf24-p9p9-4rjh
 
