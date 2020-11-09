@@ -1,0 +1,21 @@
+[Unit]
+Description=Prometheus instance
+Documentation=https://prometheus.io/docs/prometheus/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+EnvironmentFile=/etc/sysconfig/prometheus
+User=prometheus
+Group=prometheus
+Type=simple
+WorkingDirectory=/var/lib/prometheus
+ExecStart=/usr/bin/prometheus \
+          --config.file=${CONFIG_FILE} \
+          --storage.tsdb.path=${STORAGE_TSDB_PATH} \
+          --web.console.libraries=${WEB_CONSOLE_LIBRARIES_PATH} \
+          --web.console.templates=${WEB_CONSOLE_TEMPLATES_PATH} \
+          --web.listen-address=${WEB_LISTEN_ADDRESS}
+
+[Install]
+WantedBy=multi-user.target
