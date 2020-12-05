@@ -21,13 +21,18 @@ The Prometheus monitoring system and time series database.}
                         documentation
 
 Name:           %{goname}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Prometheus monitoring system and time series database
 
 # Upstream license specification: Apache-2.0
 License:        ASL 2.0
 URL:            %{gourl}
 Source0:        %{gosource}
+# unzip Source0
+# run 'make assets' in it
+# rm -rf web/ui/react-app
+# tar czvf web-ui-2.23.0.tar.gz web/ui
+Source10:       web-ui-2.23.0.tar.gz
 Source1:        prometheus.service
 Source2:        prometheus
 Source3:        prometheus.yml
@@ -146,6 +151,7 @@ BuildRequires:  golang(k8s.io/client-go/kubernetes/fake)
 
 %prep
 %goprep
+%autosetup -N -T -D -a 10 -n prometheus-%{version}
 sed -i "s|klog \"k8s.io/klog\"|klog \"github.com/simonpasquier/klog-gokit\"|" $(find . -iname "*.go" -type f)
 sed -i "s|klogv2 \"k8s.io/klog/v2\"|klogv2 \"github.com/simonpasquier/klog-gokit/v2\"|" $(find . -iname "*.go" -type f)
 
@@ -216,7 +222,11 @@ cp -aR web/ui %{buildroot}%{_sharedstatedir}/prometheus/web/.
 %gopkgfiles
 
 %changelog
-* Thu Dec 03 13:12:59 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 2.23.0-3
+* Sat Dec 05 22:54:14 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 2.23.0-2
+- Add new React based UI
+- Fix rhbz#1902496
+
+* Thu Dec 03 13:12:59 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 2.23.0-1
 - Update to 2.23.0
 - Add configuration
 - Close rhbz#1866613
