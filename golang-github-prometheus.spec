@@ -8,7 +8,7 @@
 
 # https://github.com/prometheus/prometheus
 %global goipath         github.com/prometheus/prometheus
-Version:                2.23.0
+Version:                2.24.0
 
 %gometa
 
@@ -21,7 +21,7 @@ The Prometheus monitoring system and time series database.}
                         documentation
 
 Name:           %{goname}
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Prometheus monitoring system and time series database
 
 # Upstream license specification: Apache-2.0
@@ -31,8 +31,8 @@ Source0:        %{gosource}
 # unzip Source0
 # run 'make assets' in it
 # rm -rf web/ui/react-app
-# tar czvf web-ui-2.23.0.tar.gz web/ui
-Source10:       web-ui-2.23.0.tar.gz
+# tar czvf web-ui-2.24.0.tar.gz web/ui
+Source10:       web-ui-%{version}.tar.gz
 Source1:        prometheus.service
 Source2:        prometheus
 Source3:        prometheus.yml
@@ -100,11 +100,14 @@ BuildRequires:  golang(github.com/prometheus/common/promlog/flag)
 BuildRequires:  golang(github.com/prometheus/common/route)
 BuildRequires:  golang(github.com/prometheus/common/server)
 BuildRequires:  golang(github.com/prometheus/common/version)
+BuildRequires:  golang(github.com/prometheus/exporter-toolkit/https)
+BuildRequires:  golang(github.com/prometheus/exporter-toolkit/https/kingpinflag)
 BuildRequires:  golang(github.com/samuel/go-zookeeper/zk)
 BuildRequires:  golang(github.com/shurcooL/httpfs/filter)
 BuildRequires:  golang(github.com/shurcooL/httpfs/union)
 BuildRequires:  golang(github.com/shurcooL/vfsgen)
 BuildRequires:  golang(github.com/simonpasquier/klog-gokit)
+BuildRequires:  golang(github.com/simonpasquier/klog-gokit/v2)
 BuildRequires:  golang(github.com/stretchr/testify/require)
 BuildRequires:  golang(github.com/uber/jaeger-client-go)
 BuildRequires:  golang(github.com/uber/jaeger-client-go/config)
@@ -127,6 +130,7 @@ BuildRequires:  golang(k8s.io/api/discovery/v1beta1)
 BuildRequires:  golang(k8s.io/api/networking/v1beta1)
 BuildRequires:  golang(k8s.io/apimachinery/pkg/apis/meta/v1)
 BuildRequires:  golang(k8s.io/apimachinery/pkg/fields)
+BuildRequires:  golang(k8s.io/apimachinery/pkg/labels)
 BuildRequires:  golang(k8s.io/apimachinery/pkg/runtime)
 BuildRequires:  golang(k8s.io/apimachinery/pkg/watch)
 BuildRequires:  golang(k8s.io/client-go/kubernetes)
@@ -222,6 +226,10 @@ cp -aR web/ui %{buildroot}%{_sharedstatedir}/prometheus/web/.
 %gopkgfiles
 
 %changelog
+* Thu Jan  7 17:40:17 CET 2021 Robert-André Mauchin <zebob.m@gmail.com> - 2.24.0-1
+- Update to 2.24.0
+- Close: rhbz#1911731
+
 * Sat Dec 05 22:54:14 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 2.23.0-2
 - Add new React based UI
 - Fix rhbz#1902496
