@@ -4,11 +4,11 @@
 %endif
 
 %global builddate $(date +"%%Y%%m%%d-%%T")
-%global commit_version "e5a06b483527d4fe0704b8fa3a2b475b661c526f"
+%global commit_version "e4487274853c587717006eeda8804e597d120340"
 
 # https://github.com/prometheus/prometheus
 %global goipath         github.com/prometheus/prometheus
-Version:                2.24.0
+Version:                2.24.1
 
 %gometa
 
@@ -31,7 +31,7 @@ Source0:        %{gosource}
 # unzip Source0
 # run 'make assets' in it
 # rm -rf web/ui/react-app
-# tar czvf web-ui-2.24.0.tar.gz web/ui
+# tar czvf web-ui-2.24.1.tar.gz web/ui
 Source10:       web-ui-%{version}.tar.gz
 Source1:        prometheus.service
 Source2:        prometheus
@@ -100,8 +100,8 @@ BuildRequires:  golang(github.com/prometheus/common/promlog/flag)
 BuildRequires:  golang(github.com/prometheus/common/route)
 BuildRequires:  golang(github.com/prometheus/common/server)
 BuildRequires:  golang(github.com/prometheus/common/version)
-BuildRequires:  golang(github.com/prometheus/exporter-toolkit/https)
-BuildRequires:  golang(github.com/prometheus/exporter-toolkit/https/kingpinflag)
+BuildRequires:  golang(github.com/prometheus/exporter-toolkit/web)
+BuildRequires:  golang(github.com/prometheus/exporter-toolkit/web/kingpinflag)
 BuildRequires:  golang(github.com/samuel/go-zookeeper/zk)
 BuildRequires:  golang(github.com/shurcooL/httpfs/filter)
 BuildRequires:  golang(github.com/shurcooL/httpfs/union)
@@ -138,8 +138,6 @@ BuildRequires:  golang(k8s.io/client-go/rest)
 BuildRequires:  golang(k8s.io/client-go/tools/cache)
 BuildRequires:  golang(k8s.io/client-go/tools/metrics)
 BuildRequires:  golang(k8s.io/client-go/util/workqueue)
-BuildRequires:  golang(k8s.io/klog)
-BuildRequires:  golang(k8s.io/klog/v2)
 
 %if %{with check}
 # Tests
@@ -226,6 +224,10 @@ cp -aR web/ui %{buildroot}%{_sharedstatedir}/prometheus/web/.
 %gopkgfiles
 
 %changelog
+* Thu Jan 21 19:43:35 CET 2021 Robert-André Mauchin <zebob.m@gmail.com> - 2.24.1-1
+- Update to 2.24.1
+- Close: rhbz#1918532
+
 * Thu Jan  7 17:40:17 CET 2021 Robert-André Mauchin <zebob.m@gmail.com> - 2.24.0-1
 - Update to 2.24.0
 - Close: rhbz#1911731
