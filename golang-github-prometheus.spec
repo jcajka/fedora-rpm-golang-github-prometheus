@@ -204,7 +204,8 @@ cp -aR web/ui %{buildroot}%{_sharedstatedir}/prometheus/web/.
 %if %{with check}
 %check
 # scrape: needs network
-%gocheck -t cmd -d scrape -d discovery/kubernetes -d web
+# tsdb: https://github.com/prometheus/prometheus/issues/8393
+%gocheck -t cmd -d scrape -d discovery/kubernetes -d web -d tsdb -d tsdb/chunks
 %endif
 
 %files
