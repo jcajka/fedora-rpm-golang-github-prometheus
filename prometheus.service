@@ -9,7 +9,6 @@ EnvironmentFile=/etc/sysconfig/prometheus
 User=prometheus
 Group=prometheus
 Type=simple
-WorkingDirectory=/var/lib/prometheus
 ExecStart=/usr/bin/prometheus \
           --config.file=${CONFIG_FILE} \
           --storage.tsdb.path=${STORAGE_TSDB_PATH} \

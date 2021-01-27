@@ -21,7 +21,7 @@ The Prometheus monitoring system and time series database.}
                         documentation
 
 Name:           %{goname}
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Prometheus monitoring system and time series database
 
 # Upstream license specification: Apache-2.0
@@ -37,6 +37,10 @@ Source1:        prometheus.service
 Source2:        prometheus
 Source3:        prometheus.yml
 Source4:        prometheus.conf
+Source5:        prometheus.logrotate
+
+# Debian patch for default settings
+Patch0:         02-Default_settings.patch
 
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  golang(github.com/alecthomas/units)
@@ -156,6 +160,8 @@ BuildRequires:  golang(k8s.io/client-go/kubernetes/fake)
 %autosetup -N -T -D -a 10 -n prometheus-%{version}
 sed -i "s|klog \"k8s.io/klog\"|klog \"github.com/simonpasquier/klog-gokit\"|" $(find . -iname "*.go" -type f)
 sed -i "s|klogv2 \"k8s.io/klog/v2\"|klogv2 \"github.com/simonpasquier/klog-gokit/v2\"|" $(find . -iname "*.go" -type f)
+%patch0 -p1
+
 
 %build
 export LDFLAGS="-X github.com/prometheus/common/version.Version=%{version} \
@@ -163,9 +169,9 @@ export LDFLAGS="-X github.com/prometheus/common/version.Version=%{version} \
                 -X github.com/prometheus/common/version.Branch=master \
                 -X github.com/prometheus/common/version.BuildUser=mockbuild \
                 -X github.com/prometheus/common/version.BuildDate=%{builddate} "
-
+export BUILDTAGS="netgo builtinassets"
 for cmd in cmd/* ; do
-  %gobuild -o %{gobuilddir}/bin/$(basename $cmd) %{goipath}/$cmd
+    %gobuild  -o %{gobuilddir}/bin/$(basename $cmd) %{goipath}/$cmd
 done
 
 %install
@@ -178,16 +184,18 @@ install -m 0755 -vd                     %{buildroot}%{_unitdir}
 install -m 0644 -vp %{SOURCE1}          %{buildroot}%{_unitdir}/
 
 install -m 0755 -vd                     %{buildroot}%{_sysconfdir}
-install -m 0644 -vp %{SOURCE3}          %{buildroot}%{_sysconfdir}/
+install -m 0755 -vd                     %{buildroot}%{_sysconfdir}/prometheus
+install -m 0644 -vp %{SOURCE3}          %{buildroot}%{_sysconfdir}/prometheus/
 install -m 0755 -vd                     %{buildroot}%{_sysconfdir}/sysconfig
 install -m 0644 -vp %{SOURCE2}          %{buildroot}%{_sysconfdir}/sysconfig/
+install -m 0755 -vd                     %{buildroot}%{_sysconfdir}/logrotate.d
+install -m 0644 -vp %{SOURCE5}          %{buildroot}%{_sysconfdir}/logrotate.d/prometheus
 install -m 0755 -vd                     %{buildroot}%{_sysusersdir}
 install -m 0644 -vp %{SOURCE4}          %{buildroot}%{_sysusersdir}/
 
-mkdir -p %{buildroot}%{_sharedstatedir}/prometheus/web
-mkdir -p %{buildroot}%{_datadir}/prometheus/consoles
-mkdir -p %{buildroot}%{_datadir}/prometheus/console_libraries
-cp -aR web/ui %{buildroot}%{_sharedstatedir}/prometheus/web/.
+mkdir -p %{buildroot}%{_sysconfdir}/prometheus/consoles
+mkdir -p %{buildroot}%{_sysconfdir}/prometheus/console_libraries
+mkdir -p %{buildroot}%{_sharedstatedir}/prometheus
 
 %pre
 %sysusers_create_package prometheus %{SOURCE4}
@@ -212,12 +220,13 @@ cp -aR web/ui %{buildroot}%{_sharedstatedir}/prometheus/web/.
 %license LICENSE NOTICE
 %doc docs CHANGELOG.md MAINTAINERS.md CODE_OF_CONDUCT.md CONTRIBUTING.md
 %doc README.md RELEASE.md documentation
-%{_datadir}/prometheus
-%dir %{_datadir}/prometheus/consoles
-%dir %{_datadir}/prometheus/console_libraries
+%dir %{_sysconfdir}/prometheus/
+%dir %{_sysconfdir}/prometheus/consoles
+%dir %{_sysconfdir}/prometheus/console_libraries
+%config(noreplace) %{_sysconfdir}/sysconfig/prometheus
+%config(noreplace) %{_sysconfdir}/prometheus/prometheus.yml
+%config(noreplace) %{_sysconfdir}/logrotate.d/prometheus
 %{_bindir}/*
-%{_sysconfdir}/sysconfig/prometheus
-%{_sysconfdir}/prometheus.yml
 %{_unitdir}/prometheus.service
 %{_sysusersdir}/prometheus.conf
 %attr(0755,prometheus,prometheus) %{_sharedstatedir}/prometheus
@@ -225,6 +234,12 @@ cp -aR web/ui %{buildroot}%{_sharedstatedir}/prometheus/web/.
 %gopkgfiles
 
 %changelog
+* Tue Jan 26 22:05:24 CET 2021 Robert-André Mauchin <zebob.m@gmail.com> - 2.24.1-3
+- Set default settings in main.go
+- Embedded assets in the binary
+- Added a logrotate file
+- Fix: rhbz#1902496
+
 * Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.24.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
