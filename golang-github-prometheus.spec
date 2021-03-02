@@ -21,7 +21,7 @@ The Prometheus monitoring system and time series database.}
                         documentation
 
 Name:           %{goname}
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Prometheus monitoring system and time series database
 
 # Upstream license specification: Apache-2.0
@@ -234,6 +234,10 @@ mkdir -p %{buildroot}%{_sharedstatedir}/prometheus
 %gopkgfiles
 
 %changelog
+* Tue Mar 02 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.24.1-4
+- Rebuilt for updated systemd-rpm-macros
+  See https://pagure.io/fesco/issue/2583.
+
 * Tue Jan 26 22:05:24 CET 2021 Robert-André Mauchin <zebob.m@gmail.com> - 2.24.1-3
 - Set default settings in main.go
 - Embedded assets in the binary
