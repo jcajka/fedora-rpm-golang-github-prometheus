@@ -21,7 +21,7 @@ The Prometheus monitoring system and time series database.}
                         documentation
 
 Name:           %{goname}
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Prometheus monitoring system and time series database
 
 # Upstream license specification: Apache-2.0
@@ -236,6 +236,9 @@ mkdir -p %{buildroot}%{_sharedstatedir}/prometheus
 %gopkgfiles
 
 %changelog
+* Thu Jul 22 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.24.1-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
 * Tue Jun 15 17:51:49 CEST 2021 Robert-André Mauchin <zebob.m@gmail.com> - 2.24.1-6
 - Add systemd-sysusers as Requires
 - Fix: rhbz#1972026
