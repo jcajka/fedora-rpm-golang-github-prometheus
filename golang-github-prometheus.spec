@@ -4,11 +4,11 @@
 %endif
 
 %global builddate $(date +"%%Y%%m%%d-%%T")
-%global commit_version "e4487274853c587717006eeda8804e597d120340"
+%global commit_version "dcb07e8eac34b5ea37cd229545000b857f1c1637"
 
 # https://github.com/prometheus/prometheus
 %global goipath         github.com/prometheus/prometheus
-Version:                2.24.1
+Version:                2.30.0
 
 %gometa
 
@@ -31,7 +31,7 @@ Source0:        %{gosource}
 # unzip Source0
 # run 'make assets' in it
 # rm -rf web/ui/react-app
-# tar czvf web-ui-2.24.1.tar.gz web/ui
+# tar czvf ../web-ui-2.30.0.tar.gz web/ui
 Source10:       web-ui-%{version}.tar.gz
 Source1:        prometheus.service
 Source2:        prometheus
@@ -45,27 +45,35 @@ Patch0:         02-Default_settings.patch
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  golang(github.com/alecthomas/units)
 BuildRequires:  golang(github.com/aws/aws-sdk-go/aws)
+BuildRequires:  golang(github.com/aws/aws-sdk-go/aws/awserr)
 BuildRequires:  golang(github.com/aws/aws-sdk-go/aws/credentials)
 BuildRequires:  golang(github.com/aws/aws-sdk-go/aws/credentials/stscreds)
 BuildRequires:  golang(github.com/aws/aws-sdk-go/aws/ec2metadata)
 BuildRequires:  golang(github.com/aws/aws-sdk-go/aws/session)
+BuildRequires:  golang(github.com/aws/aws-sdk-go/aws/signer/v4)
 BuildRequires:  golang(github.com/aws/aws-sdk-go/service/ec2)
+BuildRequires:  golang(github.com/aws/aws-sdk-go/service/lightsail)
 BuildRequires:  golang(github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2018-10-01/compute)
 BuildRequires:  golang(github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-10-01/network)
 BuildRequires:  golang(github.com/Azure/go-autorest/autorest)
 BuildRequires:  golang(github.com/Azure/go-autorest/autorest/adal)
 BuildRequires:  golang(github.com/Azure/go-autorest/autorest/azure)
 BuildRequires:  golang(github.com/cespare/xxhash/v2)
+BuildRequires:  golang(github.com/dennwc/varint)
 BuildRequires:  golang(github.com/digitalocean/godo)
 BuildRequires:  golang(github.com/docker/docker/api/types)
 BuildRequires:  golang(github.com/docker/docker/api/types/filters)
 BuildRequires:  golang(github.com/docker/docker/api/types/swarm)
 BuildRequires:  golang(github.com/docker/docker/client)
 BuildRequires:  golang(github.com/edsrzf/mmap-go)
-BuildRequires:  golang(github.com/go-kit/kit/log)
-BuildRequires:  golang(github.com/go-kit/kit/log/level)
+BuildRequires:  golang(github.com/envoyproxy/go-control-plane/envoy/config/core/v3)
+BuildRequires:  golang(github.com/envoyproxy/go-control-plane/envoy/service/discovery/v3)
+BuildRequires:  golang(github.com/envoyproxy/protoc-gen-validate/validate)
+BuildRequires:  golang(github.com/go-kit/log)
+BuildRequires:  golang(github.com/go-kit/log/level)
 BuildRequires:  golang(github.com/go-logfmt/logfmt)
 BuildRequires:  golang(github.com/go-openapi/strfmt)
+BuildRequires:  golang(github.com/go-zookeeper/zk)
 BuildRequires:  golang(github.com/gogo/protobuf/gogoproto)
 BuildRequires:  golang(github.com/gogo/protobuf/proto)
 BuildRequires:  golang(github.com/golang/snappy)
@@ -80,6 +88,7 @@ BuildRequires:  golang(github.com/hashicorp/consul/api)
 BuildRequires:  golang(github.com/hetznercloud/hcloud-go/hcloud)
 # BuildRequires:  golang(github.com/influxdata/influxdb/client/v2)
 BuildRequires:  golang(github.com/json-iterator/go)
+BuildRequires:  golang(github.com/linode/linodego)
 BuildRequires:  golang(github.com/miekg/dns)
 BuildRequires:  golang(github.com/mwitkow/go-conntrack)
 BuildRequires:  golang(github.com/oklog/run)
@@ -106,12 +115,12 @@ BuildRequires:  golang(github.com/prometheus/common/server)
 BuildRequires:  golang(github.com/prometheus/common/version)
 BuildRequires:  golang(github.com/prometheus/exporter-toolkit/web)
 BuildRequires:  golang(github.com/prometheus/exporter-toolkit/web/kingpinflag)
-BuildRequires:  golang(github.com/samuel/go-zookeeper/zk)
+BuildRequires:  golang(github.com/scaleway/scaleway-sdk-go/api/baremetal/v1)
+BuildRequires:  golang(github.com/scaleway/scaleway-sdk-go/api/instance/v1)
+BuildRequires:  golang(github.com/scaleway/scaleway-sdk-go/scw)
 BuildRequires:  golang(github.com/shurcooL/httpfs/filter)
 BuildRequires:  golang(github.com/shurcooL/httpfs/union)
 BuildRequires:  golang(github.com/shurcooL/vfsgen)
-BuildRequires:  golang(github.com/simonpasquier/klog-gokit)
-BuildRequires:  golang(github.com/simonpasquier/klog-gokit/v2)
 BuildRequires:  golang(github.com/stretchr/testify/require)
 BuildRequires:  golang(github.com/uber/jaeger-client-go)
 BuildRequires:  golang(github.com/uber/jaeger-client-go/config)
@@ -125,6 +134,13 @@ BuildRequires:  golang(golang.org/x/sys/unix)
 BuildRequires:  golang(golang.org/x/time/rate)
 BuildRequires:  golang(google.golang.org/api/compute/v1)
 BuildRequires:  golang(google.golang.org/api/option)
+BuildRequires:  golang(google.golang.org/genproto/googleapis/api/annotations)
+BuildRequires:  golang(google.golang.org/protobuf/encoding/protojson)
+BuildRequires:  golang(google.golang.org/protobuf/proto)
+BuildRequires:  golang(google.golang.org/protobuf/reflect/protoreflect)
+BuildRequires:  golang(google.golang.org/protobuf/reflect/protoregistry)
+BuildRequires:  golang(google.golang.org/protobuf/runtime/protoimpl)
+BuildRequires:  golang(google.golang.org/protobuf/types/known/anypb)
 BuildRequires:  golang(gopkg.in/alecthomas/kingpin.v2)
 BuildRequires:  golang(gopkg.in/fsnotify/fsnotify.v1)
 BuildRequires:  golang(gopkg.in/yaml.v2)
@@ -140,8 +156,11 @@ BuildRequires:  golang(k8s.io/apimachinery/pkg/watch)
 BuildRequires:  golang(k8s.io/client-go/kubernetes)
 BuildRequires:  golang(k8s.io/client-go/rest)
 BuildRequires:  golang(k8s.io/client-go/tools/cache)
+BuildRequires:  golang(k8s.io/client-go/tools/clientcmd)
 BuildRequires:  golang(k8s.io/client-go/tools/metrics)
 BuildRequires:  golang(k8s.io/client-go/util/workqueue)
+BuildRequires:  golang(github.com/simonpasquier/klog-gokit)
+BuildRequires:  golang(github.com/simonpasquier/klog-gokit/v2)
 
 %if %{with check}
 # Tests
@@ -215,7 +234,7 @@ mkdir -p %{buildroot}%{_sharedstatedir}/prometheus
 %check
 # scrape: needs network
 # tsdb: https://github.com/prometheus/prometheus/issues/8393
-%gocheck -t cmd -d scrape -d discovery/kubernetes -d web -d tsdb -d tsdb/chunks
+%gocheck -t cmd -d scrape -t discovery -d web -d tsdb -d tsdb/chunks -d config
 %endif
 
 %files

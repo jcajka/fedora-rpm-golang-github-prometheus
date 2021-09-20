@@ -14,7 +14,8 @@ ExecStart=/usr/bin/prometheus \
           --storage.tsdb.path=${STORAGE_TSDB_PATH} \
           --web.console.libraries=${WEB_CONSOLE_LIBRARIES_PATH} \
           --web.console.templates=${WEB_CONSOLE_TEMPLATES_PATH} \
-          --web.listen-address=${WEB_LISTEN_ADDRESS}
+          --web.listen-address=${WEB_LISTEN_ADDRESS} \
+          ${ADDITIONAL_OPTIONS}
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no
