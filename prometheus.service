@@ -1,23 +1,41 @@
 [Unit]
-Description=Prometheus service monitoring system and time series database
+Description=Monitoring system and time series database
 Documentation=https://prometheus.io/docs/introduction/overview/ man:prometheus(1)
 Wants=network-online.target
 After=network-online.target
+After=time-sync.target
 
 [Service]
 Restart=on-failure
-EnvironmentFile=/etc/sysconfig/prometheus
 User=prometheus
-Group=prometheus
-ExecStart=/usr/bin/prometheus \
-          --config.file=${CONFIG_FILE} \
-          --storage.tsdb.path=${STORAGE_TSDB_PATH} \
-          --web.console.libraries=${WEB_CONSOLE_LIBRARIES_PATH} \
-          --web.console.templates=${WEB_CONSOLE_TEMPLATES_PATH} \
-          --web.listen-address=${WEB_LISTEN_ADDRESS}
+EnvironmentFile=/etc/default/prometheus
+ExecStart=/usr/bin/prometheus $ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no
+
+# systemd hardening-options
+AmbientCapabilities=
+CapabilityBoundingSet=
+DeviceAllow=/dev/null rw
+DevicePolicy=strict
+LimitMEMLOCK=0
+LimitNOFILE=8192
+LockPersonality=true
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+PrivateUsers=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=full
+RemoveIPC=true
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallArchitectures=native
 
 [Install]
 WantedBy=multi-user.target
