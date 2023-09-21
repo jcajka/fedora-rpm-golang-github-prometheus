@@ -2,11 +2,13 @@
 %ifnarch s390x
 %bcond_without check
 %endif
+%bcond_without bundled
 %global shortname prometheus
+%global debug_package %{nil}
 
 # https://github.com/prometheus/prometheus
 %global goipath         github.com/prometheus/prometheus
-Version:                2.32.1
+Version:                2.47.0
 
 %gometa
 
@@ -23,14 +25,12 @@ Release:        %autorelease
 Summary:        Prometheus monitoring system and time series database
 
 # Upstream license specification: Apache-2.0
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            %{gourl}
 Source0:        %{gosource}
-# unzip Source0
-# run 'make assets' in it
-# rm -rf web/ui/react-app
-# tar czvf ../web-ui-2.32.1.tar.gz web/ui
-Source20:       web-ui-%{version}.tar.gz
+# Pregenerated tarballs via source.sh script in root of the package repo
+Source20:       web-ui-prometheus-%{version}.tar.gz
+Source21:       vendor-prometheus-%{version}.tar.gz
 Source1:        %{shortname}.service
 Source2:        %{shortname}.sysusers
 Source3:        %{shortname}.yml
@@ -42,6 +42,7 @@ Source6:        README.consoles
 Patch0:         defaults-paths.patch
 
 BuildRequires:  systemd-rpm-macros
+%if %{without bundled}
 BuildRequires:  golang(github.com/aws/aws-sdk-go/aws)
 BuildRequires:  golang(github.com/aws/aws-sdk-go/aws/awserr)
 BuildRequires:  golang(github.com/aws/aws-sdk-go/aws/credentials)
@@ -163,13 +164,16 @@ BuildRequires:  golang(k8s.io/client-go/tools/metrics)
 BuildRequires:  golang(k8s.io/client-go/util/workqueue)
 BuildRequires:  golang(github.com/simonpasquier/klog-gokit)
 BuildRequires:  golang(github.com/simonpasquier/klog-gokit/v2)
+%endif
 
 %if %{with check}
+%if %{without bundled}
 # Tests
 BuildRequires:  golang(k8s.io/apimachinery/pkg/types)
 BuildRequires:  golang(k8s.io/apimachinery/pkg/version)
 BuildRequires:  golang(k8s.io/client-go/discovery/fake)
 BuildRequires:  golang(k8s.io/client-go/kubernetes/fake)
+%endif
 %endif
 
 Requires(pre): shadow-utils
@@ -181,10 +185,10 @@ Requires(pre): shadow-utils
 
 %prep
 %goprep
-%autosetup -N -T -D -a 20 -n prometheus-%{version}
-sed -i "s|klog \"k8s.io/klog\"|klog \"github.com/simonpasquier/klog-gokit\"|" $(find . -iname "*.go" -type f)
-sed -i "s|klogv2 \"k8s.io/klog/v2\"|klogv2 \"github.com/simonpasquier/klog-gokit/v2\"|" $(find . -iname "*.go" -type f)
-%patch0 -p1
+%autosetup -p 1 -D -n prometheus-%{version}
+#TODO missing bundled provides
+/usr/lib/rpm/rpmuncompress -x %{SOURCE20}
+/usr/lib/rpm/rpmuncompress -x %{SOURCE21}
 
 %build
 export BUILDTAGS="netgo builtinassets"
@@ -193,7 +197,7 @@ LDFLAGS="-X github.com/prometheus/common/version.Version=%{version}  \
          -X github.com/prometheus/common/version.Branch=tarball      \
          -X github.com/prometheus/common/version.BuildDate=$(date -u -d@$SOURCE_DATE_EPOCH +%%Y%%m%%d)"
 for cmd in cmd/* ; do
-    %gobuild  -o %{gobuilddir}/bin/$(basename $cmd) %{goipath}/$cmd
+go build -mod=vendor -buildmode pie -compiler gc '-tags=rpm_crashtraceback netgo builtinassets' -ldflags '$LDFLAGS -compressdwarf=false -linkmode=external -extldflags '\''-Wl,-z,relro -Wl,--as-needed  -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes  '\''' -a -v -x -o %{gobuilddir}/bin/$(basename $cmd) %{goipath}/$cmd
 done
 
 %install
